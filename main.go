@@ -9,8 +9,8 @@ func main() {
 		SensitiveContent: false,
 		SeriesNumber:     0,
 		SeriesTotal:      0,
-		Attributes:       []Attr1{},
-		Collection:       Collect{},
-		Data:             Dat{},
+		Attributes:       []attr1{},
+		Collection:       collection{},
+		Data:             data{},
 	}
 }
