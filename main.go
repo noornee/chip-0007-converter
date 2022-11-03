@@ -15,5 +15,6 @@ func main() {
 	defer file.Close()
 
 	convertCSVtoJSON(file)
+	convertJSONtoCSV("output.json", "filename.output.csv")
 
 }

@@ -83,3 +83,31 @@ func convertCSVtoJSON(file *os.File) {
 	_ = ioutil.WriteFile("output.json", jsonData, 0644) // write to json file
 
 }
+
+func convertJSONtoCSV(input, output string) {
+	data, err := ioutil.ReadFile(input)
+	check(err)
+
+	// Unmarshal JSON data
+	var d []MetaData
+	err = json.Unmarshal([]byte(data), &d)
+	check(err)
+
+	// Create a csv file
+	f, err := os.Create(output)
+	check(err)
+	defer f.Close()
+
+	// Write Unmarshaled json data to CSV file
+	w := csv.NewWriter(f)
+	defer w.Flush()
+
+	header := []string{"SeriesNumber", "File Name", "Description", "Hash"} // header for csv file
+	w.Write(header)
+
+	for _, obj := range d {
+		var record []string
+		record = append(record, obj.Name, obj.Description, obj.Hash)
+		w.Write(record)
+	}
+}
