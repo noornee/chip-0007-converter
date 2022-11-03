@@ -108,7 +108,7 @@ func convertJSONtoCSV(input, output string) {
 	for _, obj := range d {
 		var record []string
 		//record = append(record, obj.Name, obj.Description, obj.Hash)
-		record = append(record, fmt.Sprintf("%d", obj.SeriesNumber), obj.Name, obj.Description, "" ,obj.Collection.ID, obj.Hash)
+		record = append(record, fmt.Sprintf("%d", obj.SeriesNumber), obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes[0].Value), obj.Collection.ID, obj.Hash)
 		w.Write(record)
 	}
 }
