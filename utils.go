@@ -102,12 +102,13 @@ func convertJSONtoCSV(input, output string) {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
-	header := []string{"SeriesNumber", "File Name", "Description", "Hash"} // header for csv file
+	header := []string{"SeriesNumber", "File Name", "Description", "Gender", "UUID", "Hash"} // header for csv file
 	w.Write(header)
 
 	for _, obj := range d {
 		var record []string
-		record = append(record, obj.Name, obj.Description, obj.Hash)
+		//record = append(record, obj.Name, obj.Description, obj.Hash)
+		record = append(record, fmt.Sprintf("%d", obj.SeriesNumber), obj.Name, obj.Description, "" ,obj.Collection.ID, obj.Hash)
 		w.Write(record)
 	}
 }

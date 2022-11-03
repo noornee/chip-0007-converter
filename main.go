@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	csvFilePath := flag.String("csv", "file.csv", "path to the csv file")
+	csvFilePath := flag.String("csv", "sample.csv", "path to the csv file")
 	flag.Parse()
 
 	file, err := os.Open(*csvFilePath) // open csv file
