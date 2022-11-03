@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,6 +16,15 @@ func check(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// hash256
+func hash256(data []byte) string {
+	hash := sha256.New()
+	hash.Write([]byte(data))
+
+	sha := hash.Sum(nil)
+	return fmt.Sprintf("%x", sha)
 }
 
 func convertCSVtoJSON(file *os.File) {
@@ -55,8 +66,13 @@ func convertCSVtoJSON(file *os.File) {
 			Data: data{
 				ExampleData: "",
 			},
-			Hash: line[5],
+			//Hash: line[5],
 		}
+
+		// convert struct to []bytes to be able to hash it
+		dataByte, err := json.Marshal(data)
+		check(err)
+		data.Hash = hash256(dataByte) // update struct with the value of the hash
 
 		records = append(records, *data)
 	}
@@ -67,19 +83,3 @@ func convertCSVtoJSON(file *os.File) {
 	_ = ioutil.WriteFile("output.json", jsonData, 0644) // write to json file
 
 }
-
-//func json_file_hash256(filename string) {
-
-//file, err := os.Open(filename)
-//check(err)
-//defer file.Close()
-
-//hash := sha256.New() // Hash in
-
-//if _, err := io.Copy(hash, file); err != nil {
-//check(err)
-//}
-
-////fmt.Printf("%x", hash.Sum(nil))
-
-//}
