@@ -42,15 +42,21 @@ func convertCSVtoJSON(file *os.File) {
 			continue // skip header line
 		}
 
+		gender := []attr1{{
+			TraitType: "Gender",
+			Value:     line[5],
+		}}
+
 		attributes := line[6]
-		var rec []attr1
+		var rec []attr1 // contains the appended attributes
+		rec = append(rec, gender...)
 
 		traits := strings.Split(attributes, ";")
 		for i := range traits {
 			trait := strings.Split(traits[i], ":")
 			if len(trait) == 2 {
-				attrs := []attr1{{TraitType: trait[0], Value: trait[1]}}
-				rec = append(rec, attrs[0])
+				attrs := []attr1{{TraitType: strings.Trim(trait[0], " "), Value: strings.Trim(trait[1], " ")}}
+				rec = append(rec, attrs...)
 			} else {
 				attrs := []attr1{{TraitType: trait[0], Value: ""}}
 				rec = append(rec, attrs[0])
@@ -67,12 +73,8 @@ func convertCSVtoJSON(file *os.File) {
 			MintingTool:      line[0],
 			SensitiveContent: false,
 			SeriesNumber:     series_number,
+			Attributes:       rec,
 			SeriesTotal:      0,
-			//Attributes: []attr1{{
-			//TraitType: "Gender",
-			//Value:     line[5],
-			//}},
-			Attributes: rec,
 			Collection: collection{
 				Name: line[3],
 				ID:   line[7],
@@ -84,7 +86,6 @@ func convertCSVtoJSON(file *os.File) {
 			Data: data{
 				ExampleData: "",
 			},
-			//Hash: line[5],
 		}
 
 		//convert struct to []bytes to be able to hash it
