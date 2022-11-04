@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // error checker
@@ -41,23 +42,34 @@ func convertCSVtoJSON(file *os.File) {
 			continue // skip header line
 		}
 
-		series_number, _ := strconv.Atoi(line[0])
+		attributes := line[6]
+		var rec []attr1
+
+		traits := strings.Split(attributes, ";")
+		for i := range traits {
+			trait := strings.Split(traits[i], ":")
+			meh := []attr1{{TraitType: trait[0], Value: trait[1]}}
+			rec = append(rec, meh[0])
+		}
+
+		series_number, _ := strconv.Atoi(line[1])
 
 		data := &MetaData{
 			Format:           "CHIP-0007",
-			Name:             line[1],
-			Description:      line[2],
-			MintingTool:      "",
+			Name:             line[2],
+			Description:      line[4],
+			MintingTool:      line[0],
 			SensitiveContent: false,
 			SeriesNumber:     series_number,
 			SeriesTotal:      0,
-			Attributes: []attr1{{
-				TraitType: "Gender",
-				Value:     line[3],
-			}},
+			//Attributes: []attr1{{
+			//TraitType: "Gender",
+			//Value:     line[5],
+			//}},
+			Attributes: rec,
 			Collection: collection{
-				Name: line[1],
-				ID:   line[4],
+				Name: line[3],
+				ID:   line[7],
 				Attributes: []attr2{{
 					Type:  "",
 					Value: "",
@@ -69,7 +81,7 @@ func convertCSVtoJSON(file *os.File) {
 			//Hash: line[5],
 		}
 
-		// convert struct to []bytes to be able to hash it
+		//convert struct to []bytes to be able to hash it
 		dataByte, err := json.Marshal(data)
 		check(err)
 		data.Hash = hash256(dataByte) // update struct with the value of the hash
@@ -102,13 +114,15 @@ func convertJSONtoCSV(input, output string) {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
-	header := []string{"SeriesNumber", "File Name", "Description", "Gender", "UUID", "Hash"} // header for csv file
+	// minting tool is team name
+
+	header := []string{"TeamNames", "SeriesNumber", "FileName", "Name", "Description", "Gender", "Attributes", "UUID", "Hash"} // header for csv file
 	w.Write(header)
 
 	for _, obj := range d {
 		var record []string
 		//record = append(record, obj.Name, obj.Description, obj.Hash)
-		record = append(record, fmt.Sprintf("%d", obj.SeriesNumber), obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes[0].Value), obj.Collection.ID, obj.Hash)
+		record = append(record, obj.MintingTool, fmt.Sprintf("%d", obj.SeriesNumber), "", obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes[0].Value), obj.Collection.ID, obj.Hash)
 		w.Write(record)
 	}
 }
