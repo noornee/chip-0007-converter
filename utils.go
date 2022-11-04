@@ -99,6 +99,8 @@ func convertCSVtoJSON(file *os.File) {
 	jsonData, err := json.MarshalIndent(records, "", " ")
 	check(err)
 
+	fmt.Println("generating json file")
+
 	_ = ioutil.WriteFile("output.json", jsonData, 0644) // write to json file
 
 }
@@ -125,6 +127,8 @@ func convertJSONtoCSV(input, output string) {
 
 	header := []string{"TeamNames", "SeriesNumber", "FileName", "Name", "Description", "Gender", "Attributes", "UUID", "Hash"} // header for csv file
 	w.Write(header)
+
+	fmt.Println("transforming generated json file to csv")
 
 	for _, obj := range d {
 		var record []string
