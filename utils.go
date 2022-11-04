@@ -48,8 +48,14 @@ func convertCSVtoJSON(file *os.File) {
 		traits := strings.Split(attributes, ";")
 		for i := range traits {
 			trait := strings.Split(traits[i], ":")
-			meh := []attr1{{TraitType: trait[0], Value: trait[1]}}
-			rec = append(rec, meh[0])
+			if len(trait) == 2 {
+				attrs := []attr1{{TraitType: trait[0], Value: trait[1]}}
+				rec = append(rec, attrs[0])
+			} else {
+				attrs := []attr1{{TraitType: trait[0], Value: ""}}
+				rec = append(rec, attrs[0])
+
+			}
 		}
 
 		series_number, _ := strconv.Atoi(line[1])
@@ -122,7 +128,7 @@ func convertJSONtoCSV(input, output string) {
 	for _, obj := range d {
 		var record []string
 		//record = append(record, obj.Name, obj.Description, obj.Hash)
-		record = append(record, obj.MintingTool, fmt.Sprintf("%d", obj.SeriesNumber), "", obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes[0].Value), obj.Collection.ID, obj.Hash)
+		record = append(record, obj.MintingTool, fmt.Sprintf("%d", obj.SeriesNumber), "", obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes), obj.Collection.ID, obj.Hash)
 		w.Write(record)
 	}
 }
