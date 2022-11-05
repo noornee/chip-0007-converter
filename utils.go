@@ -125,15 +125,22 @@ func convertJSONtoCSV(input, output string) {
 
 	// minting tool is team name
 
-	header := []string{"TeamNames", "SeriesNumber", "FileName", "Name", "Description", "Gender", "Attributes", "UUID", "Hash"} // header for csv file
+	header := []string{"TeamNames", "SeriesNumber", "FileName", "Name", "Description", "Attributes", "UUID", "Hash"} // header for csv file
 	w.Write(header)
 
 	fmt.Println("transforming generated json file to csv")
 
 	for _, obj := range d {
+
+		var attributes string
 		var record []string
-		//record = append(record, obj.Name, obj.Description, obj.Hash)
-		record = append(record, obj.MintingTool, fmt.Sprintf("%d", obj.SeriesNumber), "", obj.Name, obj.Description, fmt.Sprintf("%v", obj.Attributes), obj.Collection.ID, obj.Hash)
+
+		for i := range obj.Attributes {
+			attribute := fmt.Sprintf("%s: %s; ", obj.Attributes[i].TraitType, obj.Attributes[i].Value)
+			attributes += attribute
+		}
+
+		record = append(record, obj.MintingTool, fmt.Sprintf("%d", obj.SeriesNumber), "", obj.Name, obj.Description, attributes, obj.Collection.ID, obj.Hash)
 		w.Write(record)
 	}
 }
